@@ -1,0 +1,4 @@
+---
+- name: provision_host placeholder
+  ansible.builtin.debug:
+    msg: "Role provision_host not implemented yet"

@@ -1,0 +1,5 @@
+---
+- hosts: os-prov
+  gather_facts: false
+  collections: [ rws.openshift ]
+  roles: [ mirror ]

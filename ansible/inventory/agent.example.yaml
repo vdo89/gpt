@@ -1,0 +1,36 @@
+all:
+  children:
+    os-prov:
+      hosts:
+        os-prov01:
+          ansible_host: 192.0.2.10
+          ansible_user: root
+          ansible_password: "REDACTED"
+          global_config:
+            cluster_deployment: agent
+            agent_provider: proxmox
+            platform: none
+            cluster_name: demo
+            cluster_baseDomain: example.com
+            machine_cidr: 192.0.2.0/24
+    os-cluster:
+      children: { os-masters: {}, os-workers: {} }
+    os-masters:
+      hosts:
+        demo-master01:
+          ansible_host: 192.0.2.11
+          install_config:
+            role: master
+            bootMACAddress: "00:00:5E:00:53:01"
+            rootDeviceHints: { deviceName: "/dev/sda" }
+          networkConfig:
+            interfaces:
+              - name: eth0
+                type: ethernet
+                state: up
+                ipv4:
+                  enabled: true
+                  address:
+                    - { ip: 192.0.2.11, prefix-length: 24 }
+            dns-resolver: { config: { server: [ 192.0.2.1 ] } }
+            routes: { config: [ { destination: 0.0.0.0/0, next-hop-address: 192.0.2.1, next-hop-interface: eth0 } ] }

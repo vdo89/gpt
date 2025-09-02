@@ -1,0 +1,5 @@
+apiVersion: v1beta1
+kind: AgentConfig
+metadata: { name: {{ global_config.cluster_name }} }
+rendezvousIP: {{ hostvars[groups['os-masters'][0]].ansible_host }}
+hosts: []
