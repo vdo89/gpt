@@ -1,0 +1,20 @@
+#SPDX-License-Identifier: MIT-0
+---
+provision_user: kni
+provision_packages:
+  - libvirt
+  - qemu-kvm
+  - ipmitool
+  - nmstate
+  - python3-libvirt
+  - python3-lxml
+  - python3-cryptography
+  - jq
+  - curl
+provision_oc_url: >-
+  https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+provision_installer_release_image: >-
+  quay.io/openshift-release-dev/ocp-release:4.14.0-x86_64
+provision_butane_url: >-
+  https://mirror.openshift.com/pub/openshift-v4/clients/butane/latest/butane
+provision_proxy: {}

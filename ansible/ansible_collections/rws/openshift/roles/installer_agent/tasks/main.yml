@@ -1,0 +1,37 @@
+---
+- name: Create cluster dir
+  ansible.builtin.file:
+    path: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}"
+    state: directory
+    mode: "0755"
+
+- name: Render install-config
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}/install-config.yaml"
+
+- name: Render agent-config
+  ansible.builtin.template:
+    src: agent-config.yaml.j2
+    dest: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}/agent-config.yaml"
+
+- name: Create agent ISO
+  ansible.builtin.command: >-
+    openshift-baremetal-install agent create image
+    --dir /home/kni/clusterconfigs/{{ global_config.cluster_name }}
+  args:
+    chdir: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}"
+    creates: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}/agent.x86_64.iso"
+  register: agent_iso_cmd
+  environment: "{{ provision_proxy | default({}) }}"
+
+- name: Set agent ISO path
+  ansible.builtin.set_fact:
+    agent_iso_path: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}/agent.x86_64.iso"
+
+- name: Fetch kubeconfig
+  ansible.builtin.fetch:
+    src: "/home/kni/clusterconfigs/{{ global_config.cluster_name }}/auth/kubeconfig"
+    dest: "~/.kube/{{ global_config.cluster_name }}"
+    flat: true
+  ignore_errors: true

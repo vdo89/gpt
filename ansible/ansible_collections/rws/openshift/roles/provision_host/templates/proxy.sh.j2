@@ -1,0 +1,3 @@
+{% for key, value in provision_proxy.items() %}
+export {{ key | upper }}={{ value }}
+{% endfor %}

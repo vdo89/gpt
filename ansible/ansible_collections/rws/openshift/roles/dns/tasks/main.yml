@@ -1,0 +1,5 @@
+---
+- name: Include provider tasks
+  ansible.builtin.include_tasks: "providers/{{ dns_provider }}.yml"
+  vars:
+    dns_state: "{{ state | default('present') }}"
