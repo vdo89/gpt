@@ -1,0 +1,7 @@
+# Example local variables for os-deploy
+provision_pull_secret: "{}"
+provision_user_password_hash: ""
+provision_user_ssh_public_key: "ssh-rsa AAA..."
+infoblox_host: infoblox.example.com
+infoblox_username: admin
+infoblox_password: changeme

@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+namespace: rws
+name: openshift
+version: 1.0.0
+readme: README.md
+authors:
+  - RWS SRE Team
+description: Ansible collection for deploying OpenShift clusters
+license:
+  - MIT-0
+dependencies: {}
+repository: https://example.com/os-deploy
+documentation: https://example.com/os-deploy/docs
+homepage: https://example.com/os-deploy
+issues: https://example.com/os-deploy/issues

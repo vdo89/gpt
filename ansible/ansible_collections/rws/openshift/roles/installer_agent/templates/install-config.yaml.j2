@@ -1,0 +1,28 @@
+apiVersion: v1
+baseDomain: {{ global_config.cluster_baseDomain }}
+metadata:
+  name: {{ global_config.cluster_name }}
+networking:
+  machineNetwork:
+    - cidr: {{ global_config.machine_cidr }}
+{% if global_config.networkType is defined %}
+  networkType: {{ global_config.networkType }}
+{% endif %}
+compute:
+  - name: worker
+    replicas: {{ groups['os-workers'] | length | default(0) }}
+controlPlane:
+  name: master
+  replicas: {{ groups['os-masters'] | length | default(1) }}
+platform:
+{% if global_config.platform == 'none' %}
+  none: {}
+{% else %}
+  baremetal: {}
+{% endif %}
+{% if global_config.http_proxy is defined %}
+proxy:
+  httpProxy: {{ global_config.http_proxy }}
+  httpsProxy: {{ global_config.https_proxy }}
+  noProxy: {{ global_config.no_proxy }}
+{% endif %}

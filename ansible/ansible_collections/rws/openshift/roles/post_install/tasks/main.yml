@@ -1,0 +1,4 @@
+---
+- name: post_install placeholder
+  ansible.builtin.debug:
+    msg: "Role post_install not implemented yet"

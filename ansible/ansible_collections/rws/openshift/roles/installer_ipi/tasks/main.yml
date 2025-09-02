@@ -1,0 +1,4 @@
+---
+- name: installer_ipi placeholder
+  ansible.builtin.debug:
+    msg: "Role installer_ipi not implemented yet"

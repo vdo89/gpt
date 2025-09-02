@@ -1,0 +1,40 @@
+---
+- name: Manage API VIP record
+  infoblox.nios_modules.nios_host_record:
+    name: >-
+      api.{{ global_config.cluster_name }}.{{ global_config.cluster_baseDomain }}
+    ipv4addrs:
+      - ipv4addr: "{{ global_config.cluster_apiVIP }}"
+    state: "{{ dns_state }}"
+    view: "{{ dns_view }}"
+    host: "{{ infoblox_host }}"
+    username: "{{ infoblox_username }}"
+    password: "{{ infoblox_password }}"
+    wapi_version: "{{ infoblox_wapi_version | default('2.12') }}"
+
+- name: Manage apps wildcard record
+  infoblox.nios_modules.nios_host_record:
+    name: >-
+      *.apps.{{ global_config.cluster_name }}.{{ global_config.cluster_baseDomain }}
+    ipv4addrs:
+      - ipv4addr: "{{ global_config.cluster_ingressVIP }}"
+    state: "{{ dns_state }}"
+    view: "{{ dns_view }}"
+    host: "{{ infoblox_host }}"
+    username: "{{ infoblox_username }}"
+    password: "{{ infoblox_password }}"
+    wapi_version: "{{ infoblox_wapi_version | default('2.12') }}"
+
+- name: Manage node records
+  infoblox.nios_modules.nios_host_record:
+    name: >-
+      {{ item }}.{{ global_config.cluster_name }}.{{ global_config.cluster_baseDomain }}
+    ipv4addrs:
+      - ipv4addr: "{{ hostvars[item].ansible_host }}"
+    state: "{{ dns_state }}"
+    view: "{{ dns_view }}"
+    host: "{{ infoblox_host }}"
+    username: "{{ infoblox_username }}"
+    password: "{{ infoblox_password }}"
+    wapi_version: "{{ infoblox_wapi_version | default('2.12') }}"
+  loop: "{{ groups['os-cluster'] | default([]) }}"

@@ -1,0 +1,86 @@
+---
+- name: Ensure provisioning user exists
+  ansible.builtin.user:
+    name: "{{ provision_user }}"
+    password: "{{ provision_user_password_hash | default(omit) }}"
+    create_home: true
+    shell: /bin/bash
+
+- name: Allow provisioning user passwordless sudo
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ provision_user }}"
+    content: "{{ provision_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    mode: "0440"
+
+- name: Set authorized key for provisioning user
+  ansible.posix.authorized_key:
+    user: "{{ provision_user }}"
+    key: "{{ provision_user_ssh_public_key }}"
+  when: provision_user_ssh_public_key is defined
+
+- name: Install provisioning packages
+  ansible.builtin.package:
+    name: "{{ provision_packages }}"
+    state: present
+
+- name: Enable and start libvirtd
+  ansible.builtin.service:
+    name: libvirtd
+    enabled: true
+    state: started
+
+- name: Ensure default libvirt storage pool
+  community.libvirt.virt_pool:
+    command: define
+    name: default
+    state: active
+    autostart: true
+  ignore_errors: true
+
+- name: Write pull secret
+  ansible.builtin.copy:
+    dest: "/home/{{ provision_user }}/pull-secret.txt"
+    content: "{{ provision_pull_secret }}"
+    owner: "{{ provision_user }}"
+    mode: "0600"
+  when: provision_pull_secret is defined
+
+- name: Download oc client
+  ansible.builtin.get_url:
+    url: "{{ provision_oc_url }}"
+    dest: "/tmp/openshift-client.tar.gz"
+    checksum: "{{ provision_oc_checksum | default(omit) }}"
+  register: oc_download
+  when: provision_oc_url is defined
+
+- name: Install oc client
+  ansible.builtin.unarchive:
+    src: "/tmp/openshift-client.tar.gz"
+    dest: /usr/local/bin
+    remote_src: true
+  when: oc_download is changed
+
+- name: Extract openshift-baremetal-install
+  ansible.builtin.command: >-
+    oc adm release extract
+    --registry-config=/home/{{ provision_user }}/pull-secret.txt
+    --command=openshift-baremetal-install
+    {{ provision_installer_release_image }}
+  args:
+    chdir: /usr/local/bin
+    creates: /usr/local/bin/openshift-baremetal-install
+  when: provision_installer_release_image is defined
+
+- name: Install butane
+  ansible.builtin.get_url:
+    url: "{{ provision_butane_url }}"
+    dest: /usr/local/bin/butane
+    mode: "0755"
+  when: provision_butane_url is defined
+
+- name: Configure proxy for shell
+  ansible.builtin.template:
+    src: proxy.sh.j2
+    dest: /etc/profile.d/proxy.sh
+    mode: "0644"
+  when: provision_proxy is defined

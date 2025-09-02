@@ -1,0 +1,9 @@
+.venv/
+.ansible/
+__pycache__/
+.tox/
+.molecule/
+.cache/
+dist/
+*.pyc
+.DS_Store

@@ -1,0 +1,13 @@
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: {{ global_config.cluster_name }}
+rendezvousIP: {{ hostvars[groups['os-masters'][0]].ansible_host }}
+hosts:
+{% for host in groups['os-cluster'] | default([]) %}
+  - hostname: {{ host }}
+    role: {{ hostvars[host].install_config.role }}
+    bootMACAddress: {{ hostvars[host].install_config.bootMACAddress }}
+    rootDeviceHints: {{ hostvars[host].install_config.rootDeviceHints | to_json }}
+    networkConfig: {{ hostvars[host].networkConfig | to_json }}
+{% endfor %}

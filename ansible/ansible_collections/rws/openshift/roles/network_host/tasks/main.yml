@@ -1,0 +1,4 @@
+---
+- name: network_host placeholder
+  ansible.builtin.debug:
+    msg: "Role network_host not implemented yet"
