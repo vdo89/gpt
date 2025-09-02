@@ -1,0 +1,4 @@
+---
+- name: dns placeholder
+  ansible.builtin.debug:
+    msg: "Role dns not implemented yet"

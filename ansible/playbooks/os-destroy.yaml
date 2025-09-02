@@ -1,0 +1,7 @@
+---
+- hosts: os-prov
+  gather_facts: false
+  collections: [ rws.openshift ]
+  roles:
+    - { role: dns, vars: { state: 'absent' } }
+    - { role: infra, vars: { action: 'destroy' } }

@@ -1,0 +1,10 @@
+---
+- hosts: os-prov
+  gather_facts: false
+  collections: [ rws.openshift ]
+  roles:
+    - dns
+    - infra
+    - { role: installer_agent, when: "global_config.cluster_deployment == 'agent'" }
+    - { role: installer_ipi, when: "global_config.cluster_deployment in ['ipmi','redfish']" }
+    - post_install

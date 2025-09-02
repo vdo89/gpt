@@ -1,0 +1,4 @@
+---
+- name: mirror placeholder
+  ansible.builtin.debug:
+    msg: "Role mirror not implemented yet"

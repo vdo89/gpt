@@ -1,0 +1,4 @@
+---
+- name: infra placeholder
+  ansible.builtin.debug:
+    msg: "Role infra not implemented yet"

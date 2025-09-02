@@ -1,0 +1,10 @@
+---
+collections:
+  - name: ansible.utils
+  - name: community.general
+  - name: community.crypto
+  - name: community.libvirt
+  - name: kubernetes.core
+  - name: infoblox.nios_modules
+  - name: community.dns
+  - name: ansible.netcommon
