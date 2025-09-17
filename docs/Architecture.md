@@ -22,3 +22,14 @@
 7. Run installer (IPI or Agent) and wait for completion.
 8. Apply post-install components (Sealed Secrets, GitOps, NTP, console plugins).
 9. Cleanup: remove DNS records, destroy infra, purge bootstrap artifacts.
+
+### Embedded Debug Checks per Stage
+To keep failures observable without introducing extra operators, the pipeline now embeds the recommended debug checks:
+
+1. **Inventory validation** – rerun the playbook with `-vvv` (or `--step` for interactive runs) to capture rich context whenever schema validation fails, helping pinpoint the missing or malformed key at the very start of the run.
+2. **Host preparation & networking** – after host/network tasks complete, the pipeline inspects verbose Ansible logs and confirms that required packages, bridges, and static IP assignments (including DNS records) were applied before moving on.
+3. **Config rendering & prereq confirmation** – each render task records the generated manifests and cross-checks prerequisites (rendered install/agent configs, infrastructure creation success) so upstream configuration issues are spotted before the installer runs.
+4. **Installer execution** – the deploy stage guides operators to check `oc get csv -n <namespace>` and `oc describe csv <name>` along with controller pod logs when the installer or dependent operators misbehave.
+5. **Post-install components** – when reconciling custom resources, the runbook now points to `oc describe <CRD> <name>` and `oc get events -n <namespace>` so validation or reconciliation errors are captured together with the pipeline output.
+
+These guardrails provide a single troubleshooting path and prevent adding unrelated operators unless the embedded checks confirm the existing components are healthy.
